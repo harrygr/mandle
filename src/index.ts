@@ -1,12 +1,7 @@
 import ucwords from './utils/ucwords'
+import _rules, { Rules } from './rules'
 
-type Rule = (val: any) => boolean
-
-interface Rules {
-  required: Rule
-}
-
-type RuleSet = Record<keyof Rules, any>
+export type RuleSet = Partial<Record<keyof Rules, any>>
 
 interface ValidationResult {
   errors: string[]
@@ -28,23 +23,19 @@ function validate<D>(data: D, rules: Record<keyof D, RuleSet>) {
   }, {}) as Result<D>
 }
 
-const _rules = {
-  required: function (val: any) {
-    if (val === undefined || val === null) {
-      return false;
-    }
+type Message<T> = (field: string, req: T) => string
 
-    return String(val).replace(/\s/g, "").length > 0
-  },
-}
-
-const _messages: Record<keyof Rules, (field: string) => string> = {
+const _messages: Record<keyof Rules, (field: string, req: any) => string> = {
   required: (field) => `${ucwords(field)} is required`,
+  min: (field, min) => `${ucwords(field)} must be greater than ${min}`,
+  max: (field, max) => `${ucwords(field)} is be smaller than ${max}`,
 }
 
 function getErrors(fieldName: string, value: any, rules: RuleSet) {
   return Object.keys(rules).reduce<string[]>((prev, rule) => {
-    return _rules[rule](value) ? prev : prev.concat(_messages[rule](fieldName))
+    return _rules[rule](value, rules[rule])
+      ? prev
+      : prev.concat(_messages[rule](fieldName, rules[rule]))
   }, [])
 }
 
