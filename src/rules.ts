@@ -1,6 +1,6 @@
-type Rule<T> = (val: any, req: T) => boolean
+export type Rule<T> = (val: any, req: T) => boolean
 
-export interface Rules {
+export interface DefaultRules {
   required: Rule<boolean>
   min: Rule<number>
   max: Rule<number>
@@ -26,7 +26,7 @@ export function max(val: any, req: number) {
   return getSize(val) <= req
 }
 
-const rules: Rules = { required, min, max }
+const rules: DefaultRules = { required, min, max }
 
 export default rules
 
