@@ -1,5 +1,8 @@
 # Mandle
 
+[![Build Status](https://semaphoreci.com/api/v1/harrygr/mandle/branches/master/badge.svg)](https://semaphoreci.com/harrygr/mandle)
+
+
 Mandle is functional validation library built in TypeScript. It brings a simple, typesafe api for validating your data.
 
 ## Example
@@ -20,7 +23,6 @@ const result = validate({
   age: {required: true, min: 18},
 })
 
-// result:
 // {
 //   name: {
 //     passes: true,
