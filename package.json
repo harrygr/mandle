@@ -3,11 +3,13 @@
   "description": "A typesafe functional validation library",
   "author": "Harry G <harry@grumbar.me>",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "license": "MIT",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "build": "rm -rf ./dist && tsc"
   },
   "devDependencies": {
     "@types/jest": "^19.2.4",

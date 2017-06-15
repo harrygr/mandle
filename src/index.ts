@@ -3,14 +3,14 @@ import defaultRules, { DefaultRules, Rule } from './rules'
 
 export type RuleSet<R> = Partial<Record<keyof DefaultRules | keyof R, any>>
 
-interface ValidationResult {
+export interface ValidationResult {
   errors: string[]
   passes: boolean
 }
 
-type Result<D> = Record<keyof D, ValidationResult>
+export type Result<D> = Record<keyof D, ValidationResult>
 
-interface Options<R> {
+export interface Options<R> {
   rules?: R
 }
 
