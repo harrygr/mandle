@@ -1,7 +1,15 @@
 import unsluggify from './utils/unsluggify'
 import defaultRules, { DefaultRules, Rule } from './rules'
 
-export type RuleSet<R> = Partial<Record<keyof DefaultRules | keyof R, any>>
+export interface DefaultMessages {
+  required: (req: boolean) => string
+  min: (min: number) => string
+  max: (max: number) => string
+  equals: (compare: any) => string
+}
+
+export type RuleSet<R> = Partial<Record<keyof DefaultRules & keyof R, any>>
+export type Messages<R> = Partial<Record<keyof DefaultMessages & keyof R, (fieldName: string, req: any) => string>>
 
 export interface ValidationResult {
   errors: string[]
@@ -12,19 +20,22 @@ export type Result<D> = Record<keyof D, ValidationResult>
 
 export interface Options<R> {
   rules?: R
+  messages?: Messages<R>
 }
 
 export default function makeValidator<R>(options: Options<R> = {}) {
   const combinedRules = Object.assign({}, defaultRules, options.rules)
 
-  function getErrors(fieldName: string, value: any, rules: RuleSet<R>) {
-    const _messages = getDefaultMessages(fieldName)
+  function getErrors(field: string, value: any, rules: RuleSet<R>) {
+    const fieldName = unsluggify(field)
+    const messages = Object.assign({}, defaultMessages, options.messages || {})
+
     return Object.keys(rules).reduce<string[]>((prev, rule) => {
       if (combinedRules[rule](value, rules[rule])) {
         return prev
       }
-      const message = _messages[rule]
-        ? _messages[rule](rules[rule])
+      const message = messages[rule]
+        ? messages[rule](fieldName, rules[rule])
         : makeFallbackMessage(fieldName, rule)
       return prev.concat(message)
     }, [])
@@ -48,12 +59,9 @@ function makeFallbackMessage(fieldName: string, ruleName: string) {
   return `"${fieldName}" failed the "${ruleName}" check`
 }
 
-const getDefaultMessages = (field: string): Record<keyof DefaultRules, (req: any) => string> => {
-  const fieldName = unsluggify(field)
-  return {
-    required: (req) => `${fieldName} is required`,
-    min: (min) => `${fieldName} must be greater than ${min}`,
-    max: (max) => `${fieldName} must be smaller than ${max}`,
-    equals: (compare) => `${fieldName} does not match`,
-  }
+const defaultMessages: Record<keyof DefaultRules, (fieldName: string, req: any) => string> = {
+  required: (fieldName, req) => `${fieldName} is required`,
+  min: (fieldName, min) => `${fieldName} must be greater than ${min}`,
+  max: (fieldName, max) => `${fieldName} must be smaller than ${max}`,
+  equals: (fieldName, compare) => `${fieldName} does not match`,
 }

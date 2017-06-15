@@ -1,4 +1,4 @@
-import makeValidator, { RuleSet } from './index'
+import makeValidator, { RuleSet, Messages } from './index'
 import { Rule } from './rules'
 
 describe('Basic validator usage', () => {
@@ -71,6 +71,21 @@ describe('Adding custom rules', () => {
     })
 
     expect(result.name.passes).toBe(false)
-    expect(result.name.errors[0]).toContain('"name" failed')
+    expect(result.name.errors[0]).toContain('"Name" failed')
+  })
+})
+
+interface CustomRules2 { }
+
+describe('Adding custom messages', () => {
+  it('allows overriding a default message', () => {
+    const messages: Messages<CustomRules2> = {
+      required: (field, req) => `${field} must be provided yo!`,
+    }
+
+    const validate = makeValidator({ rules: {}, messages })
+
+    const result = validate({ name: '' }, { name: { required: true } })
+    expect(result.name.errors).toContain('Name must be provided yo!')
   })
 })
