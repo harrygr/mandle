@@ -1,4 +1,4 @@
-import ucwords from './utils/ucwords'
+import unsluggify from './utils/unsluggify'
 import defaultRules, { DefaultRules, Rule } from './rules'
 
 export type RuleSet<R> = Partial<Record<keyof DefaultRules | keyof R, any>>
@@ -17,19 +17,14 @@ export interface Options<R> {
 export default function makeValidator<R>(options: Options<R> = {}) {
   const combinedRules = Object.assign({}, defaultRules, options.rules)
 
-  const _messages: Record<keyof DefaultRules, (field: string, req: any) => string> = {
-    required: (field) => `${ucwords(field)} is required`,
-    min: (field, min) => `${ucwords(field)} must be greater than ${min}`,
-    max: (field, max) => `${ucwords(field)} is be smaller than ${max}`,
-  }
-
   function getErrors(fieldName: string, value: any, rules: RuleSet<R>) {
+    const _messages = getDefaultMessages(fieldName)
     return Object.keys(rules).reduce<string[]>((prev, rule) => {
       if (combinedRules[rule](value, rules[rule])) {
         return prev
       }
       const message = _messages[rule]
-        ? _messages[rule](fieldName, rules[rule])
+        ? _messages[rule](rules[rule])
         : makeFallbackMessage(fieldName, rule)
       return prev.concat(message)
     }, [])
@@ -51,4 +46,14 @@ export default function makeValidator<R>(options: Options<R> = {}) {
 
 function makeFallbackMessage(fieldName: string, ruleName: string) {
   return `"${fieldName}" failed the "${ruleName}" check`
+}
+
+const getDefaultMessages = (field: string): Record<keyof DefaultRules, (req: any) => string> => {
+  const fieldName = unsluggify(field)
+  return {
+    required: (req) => `${fieldName} is required`,
+    min: (min) => `${fieldName} must be greater than ${min}`,
+    max: (max) => `${fieldName} must be smaller than ${max}`,
+    equals: (compare) => `${fieldName} does not match`,
+  }
 }

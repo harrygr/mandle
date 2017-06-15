@@ -27,3 +27,14 @@ describe('Minimum rule', () => {
     })
   })
 })
+
+describe('Equality rule', () => {
+  [
+    ['foo', 'foo'],
+    [1, 1],
+    [{ a: 1, b: 2 }, { a: 1, b: 2 }],
+    [{ a: 1, b: 2 }, { b: 2, a: 1 }],
+  ].forEach(([a, b]) => {
+    expect(rules.equals(a, b)).toBe(true)
+  })
+})
