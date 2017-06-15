@@ -52,10 +52,9 @@ E.g.
 ```typescript
 import mandle from 'mandle'
 
-// Make a validator instance
 const validate = mandle({
-  isInArray (val, arr) {
-    return arr.indexOf(val) > -1
+  rules: {
+    isInArray: (val, arr) => arr.indexOf(val) > -1
   }
 })
 
@@ -69,6 +68,38 @@ const result = validate({
 //   animal: {
 //     passes: true,
 //     errors: [],
+//   }
+// }
+```
+
+## Custom Messages
+
+You can override the defaul validation messages with your own and add messages for your custom rules as follows
+
+```typescript
+const validate = mandle({
+  rules: {
+    isTruthy: (val) => !!val
+  },
+  messages: {
+    min: (fieldName, min) => `${fieldName} is not big enough yo!`, // override default
+    isTruthy: (fieldName) => `${fieldName} aint true yo!`, // add corresponding message for custom rule
+  }
+})
+
+const result = validate({
+  niceness: 0
+}, {
+  niceness: {min: 10, isTruthy: true}
+})
+
+// {
+//   niceness: {
+//     passes: false,
+//     errors: [
+//       'Niceness is not big enough yo!',
+//       'Niceness aint true yo!'
+//     ],
 //   }
 // }
 ```
