@@ -41,9 +41,9 @@ export default function makeValidator<R>(options: Options<R> = {}) {
     }, [])
   }
 
-  return function validate<D>(data: D, rules: Record<keyof D, RuleSet<R>>) {
+  return function validate<D>(constraints: Record<keyof D, RuleSet<R>>, data: D) {
     return Object.keys(data).reduce((prev, key) => {
-      const errors = getErrors(key, data[key], rules[key])
+      const errors = getErrors(key, data[key], constraints[key])
       return {
         ...prev,
         [key]: {

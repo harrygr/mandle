@@ -1,7 +1,5 @@
 import rules from './rules'
 
-
-
 describe('Required rule', () => {
   it('fails for invalid values', () => {
     ['', ' ', undefined, null].forEach(val => {

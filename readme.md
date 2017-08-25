@@ -14,13 +14,14 @@ import mandle from 'mandle'
 const validate = mandle()
 
 // Validate some data
+// => validate(constraints, data)
 
 const result = validate({
-  name: 'Foo Fooson',
-  age: 16,
-}, {
   name: {required: true},
   age: {required: true, min: 18},
+}, {
+  name: 'Foo Fooson',
+  age: 16,
 })
 
 // {
@@ -54,14 +55,14 @@ import mandle from 'mandle'
 
 const validate = mandle({
   rules: {
-    isInArray: (val, arr) => arr.indexOf(val) > -1
+    isOneOf: (val, arr) => arr.indexOf(val) > -1
   }
 })
 
 const result = validate({
-  animal: 'cat',
+  animal: {isOneOf: ['cat', 'dog', 'horse']},
 }, {
-  animal: {isInArray: ['cat', 'dog', 'horse']}
+  animal: 'cat',
 })
 
 // {
@@ -74,7 +75,7 @@ const result = validate({
 
 ## Custom Messages
 
-You can override the defaul validation messages with your own and add messages for your custom rules as follows
+You can override the default validation messages with your own and add messages for your custom rules as follows
 
 ```typescript
 const validate = mandle({
@@ -88,9 +89,9 @@ const validate = mandle({
 })
 
 const result = validate({
-  niceness: 0
+  niceness: {min: 10, isTruthy: true},
 }, {
-  niceness: {min: 10, isTruthy: true}
+  niceness: 0,
 })
 
 // {

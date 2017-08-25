@@ -16,7 +16,7 @@ describe('Basic validator usage', () => {
       place: { required: true },
     }
 
-    const result = validate(data, rules)
+    const result = validate(rules, data)
 
     expect(result.name.passes).toBe(true)
     expect(result.place.passes).toBe(false)
@@ -28,14 +28,14 @@ describe('Basic validator usage', () => {
     const data = { age: 27 }
     const rules = { age: { min: 18 } }
 
-    const result = validate(data, rules)
+    const result = validate(rules, data)
     expect(result.age.passes).toBe(true)
   })
   it('validates the size of something that\'s too small', () => {
     const data = { age: 16 }
     const rules = { age: { min: 18 } }
 
-    const result = validate(data, rules)
+    const result = validate(rules, data)
     expect(result.age.passes).toBe(false)
     expect(result.age.errors[0]).toBe('Age must be greater than 18')
   })
@@ -56,19 +56,19 @@ describe('Adding custom rules', () => {
     name: 'Bob',
   }
   it('allows custom rules to be added', () => {
-    const result = validate(data, {
+    const result = validate({
       age: { required: true },
       name: { isAwesome: true },
-    })
+    }, data)
 
     expect(result.name.passes).toBe(true)
   })
 
   it('works when a custom rule fails', () => {
-    const result = validate(data, {
+    const result = validate({
       age: { required: true },
       name: { isAwesome: false },
-    })
+    }, data)
 
     expect(result.name.passes).toBe(false)
     expect(result.name.errors[0]).toContain('"Name" failed')
@@ -85,7 +85,7 @@ describe('Adding custom messages', () => {
 
     const validate = makeValidator({ rules: {}, messages })
 
-    const result = validate({ name: '' }, { name: { required: true } })
+    const result = validate({ name: { required: true } }, { name: '' })
     expect(result.name.errors).toContain('Name must be provided yo!')
   })
 })
