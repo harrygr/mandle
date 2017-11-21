@@ -15,7 +15,7 @@
     "@types/jest": "^20.0.4",
     "jest": "^20.0.4",
     "ts-jest": "^20.0.6",
-    "typescript": "^2.4.0"
+    "typescript": "^2.6.0"
   },
   "keywords": [
     "data validation",
@@ -29,15 +29,17 @@
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   },
   "dependencies": {
     "@types/lodash": "^4.14.66",
     "lodash": "^4.17.4"
+  },
+  "prettier": {
+    "tabWidth": 2,
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all",
+    "parser": "typescript"
   }
 }

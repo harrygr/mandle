@@ -2,7 +2,6 @@ import makeValidator, { RuleSet, Messages } from './index'
 import { Rule } from './rules'
 
 describe('Basic validator usage', () => {
-
   const validate = makeValidator()
 
   it('validates for existance', () => {
@@ -24,14 +23,15 @@ describe('Basic validator usage', () => {
     expect(result.place.errors[0]).toEqual('Place is required')
   })
 
-  it('validates the size of something that\'s big enough', () => {
+  it("validates the size of something that's big enough", () => {
     const data = { age: 27 }
     const rules = { age: { min: 18 } }
 
     const result = validate(rules, data)
     expect(result.age.passes).toBe(true)
   })
-  it('validates the size of something that\'s too small', () => {
+
+  it("validates the size of something that's too small", () => {
     const data = { age: 16 }
     const rules = { age: { min: 18 } }
 
@@ -41,41 +41,43 @@ describe('Basic validator usage', () => {
   })
 })
 
-interface CustomRules {
-  isAwesome: Rule<boolean>
-}
-
 describe('Adding custom rules', () => {
-  const rules: CustomRules = {
+  const rules = {
     isAwesome: (_val, req) => req,
   }
-  const validate = makeValidator<CustomRules>({ rules })
+  const validate = makeValidator({ rules })
 
   const data = {
     age: 21,
     name: 'Bob',
   }
   it('allows custom rules to be added', () => {
-    const result = validate({
-      age: { required: true },
-      name: { isAwesome: true },
-    }, data)
+    const result = validate(
+      {
+        age: { required: true },
+        name: { isAwesome: true },
+      },
+      data,
+    )
 
     expect(result.name.passes).toBe(true)
   })
 
   it('works when a custom rule fails', () => {
-    const result = validate({
-      age: { required: true },
-      name: { isAwesome: false },
-    }, data)
+    const result = validate(
+      {
+        age: { required: true },
+        name: { isAwesome: false },
+      },
+      data,
+    )
 
     expect(result.name.passes).toBe(false)
     expect(result.name.errors[0]).toContain('"Name" failed')
   })
 })
 
-interface CustomRules2 { }
+interface CustomRules2 {}
 
 describe('Adding custom messages', () => {
   it('allows overriding a default message', () => {
