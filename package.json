@@ -2,10 +2,14 @@
   "name": "mandle",
   "description": "A typesafe functional validation library",
   "author": "Harry G <harry@grumbar.me>",
-  "version": "1.0.0",
+  "version": "0.0.1-semantically-versioned",
   "main": "dist/index.js",
   "license": "MIT",
   "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/harrygr/mandle"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -41,5 +45,10 @@
     "singleQuote": true,
     "trailingComma": "all",
     "parser": "typescript"
+  },
+  "release": {
+    "verifyConditions": {
+      "path": "./verifyConditions.js"
+    }
   }
 }
