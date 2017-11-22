@@ -1,13 +1,14 @@
 # Mandle
 
-[![Build Status](https://semaphoreci.com/api/v1/harrygr/mandle/branches/master/badge.svg)](https://semaphoreci.com/harrygr/mandle)
-
+[![Build Status](https://semaphoreci.com/api/v1/harrygr/mandle/branches/master/badge.svg)](https://semaphoreci.com/harrygr/mandle) [![npm version](https://badge.fury.io/js/mandle.svg)](https://badge.fury.io/js/mandle)
 
 Mandle is a functional validation library built in TypeScript. It brings a simple, typesafe api for validating your data.
 
 ## Installation
 
-`yarn add mandle`
+```
+yarn add mandle
+```
 
 ## Example
 
