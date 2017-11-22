@@ -5,6 +5,10 @@
 
 Mandle is a functional validation library built in TypeScript. It brings a simple, typesafe api for validating your data.
 
+## Installation
+
+`yarn add mandle`
+
 ## Example
 
 ```typescript
