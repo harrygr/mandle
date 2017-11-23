@@ -44,6 +44,7 @@ const result = validate({
 ## Included Rules
 
 - `required: boolean`: Ensure the value is not empty, whitespace only, undefined or null.
+- `equals: any`: Check if the value is (strictly) equal to the comparison.
 - `min: number`: Ensures numbers are `min` or greater, arrays have `min` or more elements and strings have at least `min` characters.
 - `max: number`: The inverse of `min`
 
