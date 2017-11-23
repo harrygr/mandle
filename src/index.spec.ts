@@ -77,15 +77,34 @@ describe('Adding custom rules', () => {
   })
 })
 
-interface CustomRules2 {}
-
 describe('Adding custom messages', () => {
-  it('allows overriding a default message', () => {
-    const messages: Messages<CustomRules2> = {
-      required: (field, req) => `${field} must be provided yo!`,
-    }
+  it('allows setting a message for a custom rule', () => {
+    const validate = makeValidator({
+      rules: {
+        containsWord: (val: string, word: string) => val.indexOf(word) > -1,
+      },
+      messages: {
+        containsWord: (field, word) =>
+          `${field} must contain the word "${word}"!`,
+      },
+    })
 
-    const validate = makeValidator({ rules: {}, messages })
+    const result = validate(
+      { description: { containsWord: 'foo' } },
+      { description: 'hello, bar' },
+    )
+    expect(result.description.errors).toContain(
+      'Description must contain the word "foo"!',
+    )
+  })
+
+  it('allows overriding a default message', () => {
+    const validate = makeValidator({
+      rules: {},
+      messages: {
+        required: (field, req) => `${field} must be provided yo!`,
+      },
+    })
 
     const result = validate({ name: { required: true } }, { name: '' })
     expect(result.name.errors).toContain('Name must be provided yo!')

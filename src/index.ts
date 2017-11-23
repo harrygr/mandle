@@ -1,20 +1,11 @@
 import unsluggify from './utils/unsluggify'
 import defaultRules, { DefaultRules, Rule } from './rules'
 
-export interface DefaultMessages {
-  required: (req: boolean) => string
-  min: (min: number) => string
-  max: (max: number) => string
-  equals: (compare: any) => string
-}
-
 export type RuleSet<R> = Partial<Record<keyof DefaultRules | keyof R, any>>
-export type Messages<R> = Partial<
-  Record<
-    keyof DefaultMessages | keyof R,
-    (fieldName: string, req: any) => string
-  >
->
+
+export type MessageFunc = (fieldName: string, req: any) => string
+export type DefaultMessages = Record<keyof DefaultRules, MessageFunc>
+export type Messages<R> = DefaultMessages | Record<keyof R, MessageFunc>
 
 export interface ValidationResult {
   errors: string[]
@@ -33,7 +24,7 @@ export default function makeValidator<R>(options: Options<R> = {}) {
 
   function getErrors(field: string, value: any, rules: RuleSet<R>) {
     const fieldName = unsluggify(field)
-    const messages = { ...defaultMessages, ...((options.messages as {}) || {}) }
+    const messages = { ...defaultMessages, ...(options.messages || {}) }
 
     return Object.keys(rules).reduce<string[]>((prev, rule) => {
       if (combinedRules[rule](value, rules[rule])) {
@@ -67,10 +58,7 @@ function makeFallbackMessage(fieldName: string, ruleName: string) {
   return `"${fieldName}" failed the "${ruleName}" check`
 }
 
-const defaultMessages: Record<
-  keyof DefaultRules,
-  (fieldName: string, req: any) => string
-> = {
+const defaultMessages: DefaultMessages = {
   required: (fieldName, req) => `${fieldName} is required`,
   min: (fieldName, min) => `${fieldName} must be greater than ${min}`,
   max: (fieldName, max) => `${fieldName} must be smaller than ${max}`,
