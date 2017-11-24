@@ -5,7 +5,9 @@ export type RuleSet<R> = Partial<Record<keyof DefaultRules | keyof R, any>>
 
 export type MessageFunc = (fieldName: string, req: any) => string
 export type DefaultMessages = Record<keyof DefaultRules, MessageFunc>
-export type Messages<R> = DefaultMessages | Record<keyof R, MessageFunc>
+export type Messages<R> = Partial<
+  Record<keyof R | keyof DefaultRules, MessageFunc>
+>
 
 export interface ValidationResult {
   errors: string[]
@@ -21,17 +23,26 @@ export interface Options<R> {
 
 export default function makeValidator<R>(options: Options<R> = {}) {
   const combinedRules = { ...defaultRules, ...(options.rules || {}) }
+  const messages = { ...defaultMessages, ...((options.messages as {}) || {}) }
 
-  function getErrors(field: string, value: any, rules: RuleSet<R>) {
+  function getErrors(
+    field: string,
+    value: any,
+    rules: RuleSet<R>,
+    messageOverrides: Messages<R>,
+  ) {
     const fieldName = unsluggify(field)
-    const messages = { ...defaultMessages, ...(options.messages || {}) }
+    const combinedMessages = {
+      ...messages,
+      ...((messageOverrides as {}) || {}),
+    }
 
     return Object.keys(rules).reduce<string[]>((prev, rule) => {
       if (combinedRules[rule](value, rules[rule])) {
         return prev
       }
-      const message = messages[rule]
-        ? messages[rule](fieldName, rules[rule])
+      const message = combinedMessages[rule]
+        ? combinedMessages[rule](fieldName, rules[rule])
         : makeFallbackMessage(fieldName, rule)
       return prev.concat(message)
     }, [])
@@ -40,12 +51,19 @@ export default function makeValidator<R>(options: Options<R> = {}) {
   return function validate<D>(
     constraints: Record<keyof D, RuleSet<R>>,
     data: D,
+    messages: Partial<Record<keyof D, Messages<R>>> = {},
   ) {
-    return Object.keys(data).reduce((prev, key) => {
-      const errors = getErrors(key, data[key], constraints[key])
+    return Object.keys(data).reduce((prev, field) => {
+      const messageOverrides = messages[field] || {}
+      const errors = getErrors(
+        field,
+        data[field],
+        constraints[field],
+        messageOverrides,
+      )
       return {
         ...prev,
-        [key]: {
+        [field]: {
           errors,
           passes: !errors.length,
         },

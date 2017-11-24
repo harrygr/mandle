@@ -109,4 +109,31 @@ describe('Adding custom messages', () => {
     const result = validate({ name: { required: true } }, { name: '' })
     expect(result.name.errors).toContain('Name must be provided yo!')
   })
+
+  it('allows adding a custom message for a specific field', () => {
+    const validate = makeValidator({
+      messages: { min: () => 'Too short' },
+    })
+
+    const result = validate(
+      {
+        name: { min: 10 },
+        faveAnimal: { min: 5 },
+      },
+      {
+        name: 'Bobby',
+        faveAnimal: 'Cat',
+      },
+      {
+        faveAnimal: {
+          min: (field, req) => `Fave animal short be at least ${req} chars`,
+        },
+      },
+    )
+
+    expect(result.name.errors).toContain('Too short')
+    expect(result.faveAnimal.errors).toContain(
+      'Fave animal short be at least 5 chars',
+    )
+  })
 })
