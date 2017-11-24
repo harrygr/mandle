@@ -110,3 +110,42 @@ const result = validate({
 //   }
 // }
 ```
+
+### Field-level Messages
+
+You can also override the pre-loaded messages at validation time by specifying a message for any given rule for an individual field in your data.
+
+```typescript
+const validate = mandle()
+
+const result = validate(
+  {
+    age: { min: 18 },
+    passwordStrength: { min: 5 },
+  },
+  {
+    age: 16,
+    passwordStrength: 3,
+  },
+  {
+    passwordStrength: {
+      min: (field, req) => `Your password is too weak.`,
+    },
+  },
+)
+
+// {
+//   age: {
+//     passes: false,
+//     errors: [
+//       'Age must be greater than 18', ⬅ the default
+//     ],
+//   }
+//   passwordStrength: {
+//     passes: false,
+//     errors: [
+//       'Your password is too weak.',
+//     ],
+//   }
+// }
+```
