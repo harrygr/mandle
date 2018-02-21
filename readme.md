@@ -30,13 +30,17 @@ const result = validate({
 })
 
 // {
-//   name: {
-//     passes: true,
-//     errors: [],
-//   },
-//   age: {
-//     passes: false,
-//     errors: ["Age must be greater than 18"],
+//   passes: false,
+//   errors: ["Age must be greater than 18"],
+//   fields: {
+//     name: {
+//       passes: true,
+//       errors: [],
+//     },
+//     age: {
+//       passes: false,
+//       errors: ["Age must be greater than 18"],
+//     }
 //   }
 // }
 ```
@@ -72,9 +76,13 @@ const result = validate({
 })
 
 // {
-//   animal: {
-//     passes: true,
-//     errors: [],
+//   passes: true,
+//   errors: [],
+//   fields: {
+//     animal: {
+//       passes: true,
+//       errors: [],
+//     }
 //   }
 // }
 ```
@@ -101,12 +109,19 @@ const result = validate({
 })
 
 // {
-//   niceness: {
-//     passes: false,
-//     errors: [
-//       'Niceness is not big enough yo!',
-//       'Niceness aint true yo!'
-//     ],
+//   passes: false,
+//   errors: [
+//     'Niceness is not big enough yo!',
+//     'Niceness aint true yo!'
+//   ],
+//   fields: {
+//     niceness: {
+//       passes: false,
+//       errors: [
+//         'Niceness is not big enough yo!',
+//         'Niceness aint true yo!'
+//       ],
+//     }
 //   }
 // }
 ```
@@ -135,17 +150,24 @@ const result = validate(
 )
 
 // {
-//   age: {
-//     passes: false,
-//     errors: [
-//       'Age must be greater than 18', ⬅ the default
-//     ],
-//   }
-//   passwordStrength: {
-//     passes: false,
-//     errors: [
-//       'Your password is too weak.',
-//     ],
+//   passes: false,
+//   errors: [
+//     'Age must be greater than 18',
+//     'Your password is too weak.'
+//   ],
+//   fields: {
+//     age: {
+//       passes: false,
+//       errors: [
+//         'Age must be greater than 18', ⬅ the default
+//       ]
+//     }
+//     passwordStrength: {
+//       passes: false,
+//       errors: [
+//         'Your password is too weak.',
+//       ]
+//     }
 //   }
 // }
 ```
