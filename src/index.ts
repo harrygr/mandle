@@ -14,7 +14,11 @@ export interface ValidationResult {
   passes: boolean
 }
 
-export type Result<D> = Record<keyof D, ValidationResult>
+export interface Result<D> {
+  fields: Record<keyof D, ValidationResult>
+  errors: string[]
+  passes: boolean
+}
 
 export interface Options<R> {
   rules?: R
@@ -28,7 +32,7 @@ export default function makeValidator<R>(options: Options<R> = {}) {
   function getErrors(
     field: string,
     value: any,
-    rules: RuleSet<R>,
+    fieldConstraints: RuleSet<R>,
     messageOverrides: Messages<R>,
   ) {
     const fieldName = unsluggify(field)
@@ -37,15 +41,21 @@ export default function makeValidator<R>(options: Options<R> = {}) {
       ...((messageOverrides as {}) || {}),
     }
 
-    return Object.keys(rules).reduce<string[]>((prev, rule) => {
-      if (combinedRules[rule](value, rules[rule])) {
-        return prev
-      }
-      const message = combinedMessages[rule]
-        ? combinedMessages[rule](fieldName, rules[rule])
-        : makeFallbackMessage(fieldName, rule)
-      return prev.concat(message)
-    }, [])
+    return Object.keys(fieldConstraints).reduce<string[]>(
+      (prev, constraint) => {
+        if (combinedRules[constraint](value, fieldConstraints[constraint])) {
+          return prev
+        }
+        const message = combinedMessages[constraint]
+          ? combinedMessages[constraint](
+              fieldName,
+              fieldConstraints[constraint],
+            )
+          : makeFallbackMessage(fieldName, constraint)
+        return prev.concat(message)
+      },
+      [],
+    )
   }
 
   return function validate<D>(
@@ -53,22 +63,33 @@ export default function makeValidator<R>(options: Options<R> = {}) {
     data: D,
     messages: Partial<Record<keyof D, Messages<R>>> = {},
   ) {
-    return Object.keys(data).reduce((prev, field) => {
-      const messageOverrides = messages[field] || {}
-      const errors = getErrors(
-        field,
-        data[field],
-        constraints[field],
-        messageOverrides,
-      )
-      return {
-        ...prev,
-        [field]: {
-          errors,
-          passes: !errors.length,
-        },
-      }
-    }, {}) as Result<D>
+    const fields = Object.keys(data).reduce(
+      (prev, field) => {
+        const messageOverrides = messages[field] || {}
+        const errors = getErrors(
+          field,
+          data[field],
+          constraints[field] || {},
+          messageOverrides,
+        )
+        const fieldPasses = !errors.length
+        return {
+          ...prev,
+          errors: prev.errors.concat(errors),
+          passes: prev.passes ? fieldPasses : prev.passes,
+          fields: {
+            ...prev.fields,
+            [field]: {
+              errors,
+              passes: fieldPasses,
+            },
+          },
+        }
+      },
+      { fields: {}, passes: true, errors: [] as string[] },
+    )
+
+    return fields as Result<D>
   }
 }
 

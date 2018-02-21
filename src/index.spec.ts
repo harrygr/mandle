@@ -4,6 +4,56 @@ import { Rule } from './rules'
 describe('Basic validator usage', () => {
   const validate = makeValidator()
 
+  it('consolidates the validation result when 2 fields fail', () => {
+    const data = {
+      size1: 10,
+      size2: 13,
+    }
+
+    const rules = {
+      size1: { min: 20 },
+      size2: { min: 20 },
+    }
+
+    const result = validate(rules, data)
+    expect(result.passes).toBe(false)
+    expect(result.errors).toHaveLength(2)
+    expect(result.errors).toContain('Size 2 must be greater than 20')
+  })
+
+  it('consolidates the validation result when 1 field fails', () => {
+    const data = {
+      size1: 10,
+      size2: 30,
+    }
+
+    const rules = {
+      size1: { min: 20 },
+      size2: { min: 20 },
+    }
+
+    const result = validate(rules, data)
+    expect(result.passes).toBe(false)
+    expect(result.errors).toHaveLength(1)
+    expect(result.errors).toContain('Size 1 must be greater than 20')
+  })
+
+  it('consolidates the validation result when no fields fail', () => {
+    const data = {
+      size1: 40,
+      size2: 30,
+    }
+
+    const rules = {
+      size1: { min: 20 },
+      size2: { min: 20 },
+    }
+
+    const result = validate(rules, data)
+    expect(result.passes).toBe(true)
+    expect(result.errors).toHaveLength(0)
+  })
+
   it('validates for existance', () => {
     const data = {
       name: 'Joe Bloggs',
@@ -17,10 +67,10 @@ describe('Basic validator usage', () => {
 
     const result = validate(rules, data)
 
-    expect(result.name.passes).toBe(true)
-    expect(result.place.passes).toBe(false)
-    expect(result.place.errors).toHaveLength(1)
-    expect(result.place.errors[0]).toEqual('Place is required')
+    expect(result.fields.name.passes).toBe(true)
+    expect(result.fields.place.passes).toBe(false)
+    expect(result.fields.place.errors).toHaveLength(1)
+    expect(result.fields.place.errors[0]).toEqual('Place is required')
   })
 
   it("validates the size of something that's big enough", () => {
@@ -28,7 +78,7 @@ describe('Basic validator usage', () => {
     const rules = { age: { min: 18 } }
 
     const result = validate(rules, data)
-    expect(result.age.passes).toBe(true)
+    expect(result.fields.age.passes).toBe(true)
   })
 
   it("validates the size of something that's too small", () => {
@@ -36,8 +86,8 @@ describe('Basic validator usage', () => {
     const rules = { age: { min: 18 } }
 
     const result = validate(rules, data)
-    expect(result.age.passes).toBe(false)
-    expect(result.age.errors[0]).toBe('Age must be greater than 18')
+    expect(result.fields.age.passes).toBe(false)
+    expect(result.fields.age.errors[0]).toBe('Age must be greater than 18')
   })
 })
 
@@ -60,7 +110,7 @@ describe('Adding custom rules', () => {
       data,
     )
 
-    expect(result.name.passes).toBe(true)
+    expect(result.fields.name.passes).toBe(true)
   })
 
   it('works when a custom rule fails', () => {
@@ -72,8 +122,8 @@ describe('Adding custom rules', () => {
       data,
     )
 
-    expect(result.name.passes).toBe(false)
-    expect(result.name.errors[0]).toContain('"Name" failed')
+    expect(result.fields.name.passes).toBe(false)
+    expect(result.fields.name.errors[0]).toContain('"Name" failed')
   })
 })
 
@@ -93,7 +143,7 @@ describe('Adding custom messages', () => {
       { description: { containsWord: 'foo' } },
       { description: 'hello, bar' },
     )
-    expect(result.description.errors).toContain(
+    expect(result.fields.description.errors).toContain(
       'Description must contain the word "foo"!',
     )
   })
@@ -107,7 +157,7 @@ describe('Adding custom messages', () => {
     })
 
     const result = validate({ name: { required: true } }, { name: '' })
-    expect(result.name.errors).toContain('Name must be provided yo!')
+    expect(result.fields.name.errors).toContain('Name must be provided yo!')
   })
 
   it('allows adding a custom message for a specific field', () => {
@@ -131,8 +181,8 @@ describe('Adding custom messages', () => {
       },
     )
 
-    expect(result.name.errors).toContain('Too short')
-    expect(result.faveAnimal.errors).toContain(
+    expect(result.fields.name.errors).toContain('Too short')
+    expect(result.fields.faveAnimal.errors).toContain(
       'Fave animal short be at least 5 chars',
     )
   })
