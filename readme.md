@@ -13,161 +13,41 @@ yarn add mandle
 ## Example
 
 ```typescript
-import mandle from 'mandle'
+import makeValidator from 'mandle'
+import { required, atLeast18 } from './constraints'
 
 // Make a validator instance
-const validate = mandle()
+const validatePerson = makeValidator({
+  name: [required],
+  age: [required, atLeast18],
+})
 
 // Validate some data
-// => validate(constraints, data)
-
-const result = validate({
-  name: {required: true},
-  age: {required: true, min: 18},
-}, {
-  name: 'Foo Fooson',
-  age: 16,
-})
-
-// {
-//   passes: false,
-//   errors: ["Age must be greater than 18"],
-//   fields: {
-//     name: {
-//       passes: true,
-//       errors: [],
-//     },
-//     age: {
-//       passes: false,
-//       errors: ["Age must be greater than 18"],
-//     }
-//   }
-// }
-```
-
-## Included Rules
-
-- `required: boolean`: Ensure the value is not empty, whitespace only, undefined or null.
-- `equals: any`: Check if the value is (strictly) equal to the comparison.
-- `min: number`: Ensures numbers are `min` or greater, arrays have `min` or more elements and strings have at least `min` characters.
-- `max: number`: The inverse of `min`
-
-## Add Custom Rules
-
-You can pass your own rules to mandle when you obtain a validator instance.
-
-A rule is a function that takes the value to be validated, and potentially a requirement to compare against and returns a boolean.
-
-E.g.
-
-```typescript
-import mandle from 'mandle'
-
-const validate = mandle({
-  rules: {
-    isOneOf: (val, arr) => arr.indexOf(val) > -1
-  }
-})
-
-const result = validate({
-  animal: {isOneOf: ['cat', 'dog', 'horse']},
-}, {
-  animal: 'cat',
-})
-
-// {
-//   passes: true,
-//   errors: [],
-//   fields: {
-//     animal: {
-//       passes: true,
-//       errors: [],
-//     }
-//   }
-// }
-```
-
-## Custom Messages
-
-You can override the default validation messages with your own and add messages for your custom rules as follows
-
-```typescript
-const validate = mandle({
-  rules: {
-    isTruthy: (val) => !!val
-  },
-  messages: {
-    min: (fieldName, min) => `${fieldName} is not big enough yo!`, // override default
-    isTruthy: (fieldName) => `${fieldName} aint true yo!`, // add corresponding message for custom rule
-  }
-})
-
-const result = validate({
-  niceness: {min: 10, isTruthy: true},
-}, {
-  niceness: 0,
-})
-
-// {
-//   passes: false,
-//   errors: [
-//     'Niceness is not big enough yo!',
-//     'Niceness aint true yo!'
-//   ],
-//   fields: {
-//     niceness: {
-//       passes: false,
-//       errors: [
-//         'Niceness is not big enough yo!',
-//         'Niceness aint true yo!'
-//       ],
-//     }
-//   }
-// }
-```
-
-### Field-level Messages
-
-You can also override the pre-loaded messages at validation time by specifying a message for any given rule for an individual field in your data.
-
-```typescript
-const validate = mandle()
-
-const result = validate(
+const result = validatePerson(
   {
-    age: { min: 18 },
-    passwordStrength: { min: 5 },
-  },
-  {
+    name: 'Foo Fooson',
     age: 16,
-    passwordStrength: 3,
-  },
-  {
-    passwordStrength: {
-      min: (field, req) => `Your password is too weak.`,
-    },
   },
 )
 
 // {
-//   passes: false,
-//   errors: [
-//     'Age must be greater than 18',
-//     'Your password is too weak.'
-//   ],
-//   fields: {
-//     age: {
-//       passes: false,
-//       errors: [
-//         'Age must be greater than 18', ⬅ the default
-//       ]
-//     }
-//     passwordStrength: {
-//       passes: false,
-//       errors: [
-//         'Your password is too weak.',
-//       ]
-//     }
-//   }
+//   age: "Must be at least 18"
 // }
+```
+
+## Constraints
+
+To construct a validator you should give it some constraints. A constraint is a function that takes a value and returns either a string (the validation error message) or `undefined`.
+
+For example, one of the simplest constraints you might want is `required`:
+
+```typescript
+const required = <T>(val: T) => (val ? undefined : 'Required')
+```
+
+The data being validated is also provided as the 2nd argument for a constraint for situations where your constaint depends on some other value in the data. E.g.
+
+```typescript
+const passwordEquals: Constraint<PasswordFields> = (password, fields) =>
+  password !== fields.passwordConfirm ? 'Passwords should match' : undefined
 ```
