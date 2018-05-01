@@ -40,10 +40,6 @@
       "json"
     ]
   },
-  "dependencies": {
-    "@types/lodash": "^4.14.66",
-    "lodash": "^4.17.4"
-  },
   "prettier": {
     "tabWidth": 2,
     "semi": false,
