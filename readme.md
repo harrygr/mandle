@@ -1,6 +1,6 @@
 # Mandle
 
-[![Build Status](https://semaphoreci.com/api/v1/harrygr/mandle/branches/master/badge.svg)](https://semaphoreci.com/harrygr/mandle) [![npm version](https://badge.fury.io/js/mandle.svg)](https://badge.fury.io/js/mandle)
+[![CircleCI](https://img.shields.io/circleci/project/github/harrygr/mandle.svg?style=flat-square)](https://circleci.com/gh/harrygr/mandle) [![npm](https://img.shields.io/npm/v/mandle.svg?style=flat-square)](https://www.npmjs.com/package/mandle) [![codecov](https://codecov.io/gh/harrygr/mandle/branch/master/graph/badge.svg)](https://codecov.io/gh/harrygr/mandle)
 
 Mandle is a functional validation library built in TypeScript. It brings a simple, typesafe api for validating your data.
 
