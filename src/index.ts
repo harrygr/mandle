@@ -5,9 +5,8 @@ export type Constraint<F extends object, T = any> = (
 export type Constraints<F extends object> = Partial<
   Record<keyof F, Constraint<F>[]>
 >
-export type ValidationResult<F extends object> = Record<
-  keyof F,
-  string | undefined
+export type ValidationResult<F extends object> = Partial<
+  Record<keyof F, string | undefined>
 >
 
 export function makeValidator<F extends object>(constraints: Constraints<F>) {
@@ -29,7 +28,7 @@ export function makeValidator<F extends object>(constraints: Constraints<F>) {
         undefined,
       )
 
-      return Object.assign({}, acc, { [fieldName]: error })
+      return error ? Object.assign({}, acc, { [fieldName]: error }) : acc
     }
 
     return fieldNames.reduce(getErrors, {} as ValidationResult<F>)

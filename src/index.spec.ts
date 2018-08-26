@@ -21,7 +21,7 @@ describe('Basic validator usage', () => {
     ).toEqual({})
   })
 
-  it('only returns a message for the first failing contrait for a field', () => {
+  it('only returns a message for the first failing constraint for a field', () => {
     const ageValidator = makeValidator({ age: [required, atLeast18] })
 
     expect(
@@ -50,5 +50,21 @@ describe('Basic validator usage', () => {
     })
 
     expect(result).toEqual({ password: 'Should be equal' })
+  })
+
+  it('does not include the keys of passing fields in the validation result', () => {
+    const personValidator = makeValidator({
+      name: [required],
+      age: [required],
+    })
+
+    const fields = {
+      name: 'Tim',
+      age: undefined,
+    }
+
+    const result = personValidator(fields)
+
+    expect(result).not.toHaveProperty('name')
   })
 })
