@@ -15,7 +15,7 @@ yarn add mandle
 ## Example
 
 ```typescript
-import makeValidator from 'mandle'
+import { makeValidator } from 'mandle'
 import { required, atLeast18 } from './constraints'
 
 // Make a validator instance
