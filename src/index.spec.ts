@@ -5,24 +5,30 @@ const equals = <T>(req: T, val: T) =>
 const required = <T>(val: T) => (val ? undefined : 'Required')
 const atLeast18 = (val: number) => (val >= 18 ? undefined : 'Not old enough')
 
+interface AgeFields {
+  age: number | undefined
+}
+
 describe('Basic validator usage', () => {
   it('validates a number', () => {
-    const ageValidator = makeValidator({ age: [atLeast18] })
+    const validateAge = makeValidator<AgeFields>({ age: [atLeast18] })
 
     expect(
-      ageValidator({
+      validateAge({
         age: 16,
       }),
     ).toEqual({ age: 'Not old enough' })
     expect(
-      ageValidator({
+      validateAge({
         age: 44,
       }),
     ).toEqual({})
   })
 
   it('only returns a message for the first failing constraint for a field', () => {
-    const ageValidator = makeValidator({ age: [required, atLeast18] })
+    const ageValidator = makeValidator<AgeFields>({
+      age: [required, atLeast18],
+    })
 
     expect(
       ageValidator({
@@ -37,11 +43,11 @@ describe('Basic validator usage', () => {
   }
 
   it('validates a field being equal to another', () => {
-    const passwordEquals: Constraint<PasswordFields> = (val, fields) =>
+    const validatePasswords: Constraint<PasswordFields> = (val, fields) =>
       equals(fields.passwordConfirm, val)
 
     const passwordValidator = makeValidator<PasswordFields>({
-      password: [required, passwordEquals],
+      password: [required, validatePasswords],
     })
 
     const result = passwordValidator({
@@ -52,18 +58,23 @@ describe('Basic validator usage', () => {
     expect(result).toEqual({ password: 'Should be equal' })
   })
 
+  interface PersonFields {
+    name: string
+    age: string
+  }
+
   it('does not include the keys of passing fields in the validation result', () => {
-    const personValidator = makeValidator({
+    const validatePerson = makeValidator<PersonFields>({
       name: [required],
       age: [required],
     })
 
-    const fields = {
+    const fields: PersonFields = {
       name: 'Tim',
-      age: undefined,
+      age: '',
     }
 
-    const result = personValidator(fields)
+    const result = validatePerson(fields)
 
     expect(result).not.toHaveProperty('name')
   })
