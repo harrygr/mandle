@@ -17,11 +17,11 @@
     "semantic-release": "semantic-release"
   },
   "devDependencies": {
-    "@types/jest": "^23.0.0",
-    "jest": "^23.0.0",
+    "@types/jest": "^24.0.13",
+    "jest": "^24.8.0",
     "semantic-release": "^15.6.3",
-    "ts-jest": "^23.0.0",
-    "typescript": "^2.6.0"
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.4.5"
   },
   "keywords": [
     "data validation",
@@ -32,7 +32,7 @@
   ],
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.tsx?$": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
     "moduleFileExtensions": [

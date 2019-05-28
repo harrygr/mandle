@@ -2,7 +2,9 @@
 
 [![CircleCI](https://img.shields.io/circleci/project/github/harrygr/mandle.svg?style=flat-square)](https://circleci.com/gh/harrygr/mandle) [![npm](https://img.shields.io/npm/v/mandle.svg?style=flat-square)](https://www.npmjs.com/package/mandle) [![codecov](https://codecov.io/gh/harrygr/mandle/branch/master/graph/badge.svg)](https://codecov.io/gh/harrygr/mandle)
 
-Mandle is a functional validation library built in TypeScript. It brings a simple, typesafe api for validating your data.
+Mandle is a functional validation library built in TypeScript. It brings a simple, declarative api for validating your data.
+
+It's tiny in size and has no dependencies.
 
 ## Installation
 
@@ -42,7 +44,7 @@ To construct a validator you should give it some constraints. A constraint is a 
 For example, one of the simplest constraints you might want is `required`:
 
 ```typescript
-const required = <T>(val: T) => (val ? undefined : 'Required')
+const required = (val: any) => (val ? undefined : 'Required')
 ```
 
 The data being validated is also provided as the 2nd argument for a constraint for situations where your constaint depends on some other value in the data. E.g.

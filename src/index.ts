@@ -9,14 +9,16 @@ export type ValidationResult<F extends object> = Partial<
   Record<keyof F, string | undefined>
 >
 
-export function makeValidator<F extends object>(constraints: Constraints<F>) {
+export const makeValidator = <F extends object>(
+  constraints: Constraints<F>,
+) => {
   return (fields: F): ValidationResult<F> => {
     const fieldNames = Object.keys(fields) as (keyof F)[]
 
-    function getErrors(
-      acc: ValidationResult<F>,
+    const getErrors = (
+      errors: ValidationResult<F>,
       fieldName: keyof F,
-    ): ValidationResult<F> {
+    ): ValidationResult<F> => {
       const val = fields[fieldName]
       const fieldConstraints = (constraints[fieldName] || []) as Constraint<
         F,
@@ -28,7 +30,7 @@ export function makeValidator<F extends object>(constraints: Constraints<F>) {
         undefined,
       )
 
-      return error ? Object.assign({}, acc, { [fieldName]: error }) : acc
+      return error ? { ...errors, [fieldName]: error } : errors
     }
 
     return fieldNames.reduce(getErrors, {} as ValidationResult<F>)
