@@ -3,22 +3,20 @@ name: Node CI
 on: [push]
 
 jobs:
-  build:
+  build-n-test:
 
     runs-on: ubuntu-18.04
 
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
-
     steps:
     - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install, build, and test
-      run: |
-        yarn install
-        yarn build 
-        yarn test --coverage
+        node-version: 10.x
+
+    - name: Install deps
+      run: yarn install
+    - name: Build js
+      run: yarn build
+    - name: Run tests
+      run: yarn test --coverage
