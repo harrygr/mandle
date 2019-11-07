@@ -52,7 +52,7 @@ jobs:
         name: dist
 
     - name: Semantic release
-      run: npx semantic-release
+      run: npx semantic-release@15.13.30
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         GH_TOKEN: ${{ secrets.GH_TOKEN }}
