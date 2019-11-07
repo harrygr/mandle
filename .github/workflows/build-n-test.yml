@@ -14,10 +14,21 @@ jobs:
       with:
         node-version: 10.x
 
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-deps-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-deps-${{ hashFiles('**/yarn.lock') }}
+          ${{ runner.OS }}-deps-
+
     - name: Install deps
       run: yarn install
+
     - name: Build js
       run: yarn build
+
     - name: Run tests
       run: yarn test --coverage
 
@@ -33,8 +44,23 @@ jobs:
     needs: build-n-test
 
     steps:
+    - uses: actions/checkout@v1
+
+    - name: Cache node modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.OS }}-deps-${{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          ${{ runner.OS }}-deps-${{ hashFiles('**/yarn.lock') }}
+          ${{ runner.OS }}-deps-
+
+    - name: Install deps
+      run: yarn install
+
     - name: Download built package
       uses: actions/download-artifact@v1.0.0
       with:
         name: dist
-    - run: ls dist
+
+    - run: yarn semantic-release --dry-run
