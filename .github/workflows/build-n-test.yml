@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   build-n-test:
-
+    name: Build and test
     runs-on: ubuntu-18.04
 
     steps:
@@ -20,3 +20,21 @@ jobs:
       run: yarn build
     - name: Run tests
       run: yarn test --coverage
+
+    - name: Upload built package
+      uses: actions/upload-artifact@v1.0.0
+      with:
+        name: dist
+        path: dist
+
+
+  publish:
+    runs-on: ubuntu-18.04
+    needs: build-n-test
+
+    steps:
+    - name: Download built package
+      uses: actions/download-artifact@v1.0.0
+      with:
+        name: dist
+    - run: ls dist
