@@ -63,4 +63,7 @@ jobs:
       with:
         name: dist
 
-    - run: yarn semantic-release --dry-run
+    - name: Semantic release
+      run: yarn semantic-release
+      env:
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
