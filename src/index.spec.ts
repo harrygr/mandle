@@ -1,4 +1,4 @@
-import { makeValidator, Constraint } from './'
+import { makeValidator } from './'
 
 const equals = <T>(req: T, val: T) =>
   val !== req ? 'Should be equal' : undefined
@@ -43,10 +43,10 @@ describe('Basic validator usage', () => {
   }
 
   it('validates a field being equal to another', () => {
-    const validatePasswords: Constraint<PasswordFields> = (val, fields) =>
+    const validatePasswords = (val: any, fields: PasswordFields) =>
       equals(fields.passwordConfirm, val)
 
-    const passwordValidator = makeValidator<PasswordFields>({
+    const passwordValidator = makeValidator({
       password: [required, validatePasswords],
     })
 
@@ -64,7 +64,7 @@ describe('Basic validator usage', () => {
   }
 
   it('does not include the keys of passing fields in the validation result', () => {
-    const validatePerson = makeValidator<PersonFields>({
+    const validatePerson = makeValidator({
       name: [required],
       age: [required],
     })
@@ -77,5 +77,21 @@ describe('Basic validator usage', () => {
     const result = validatePerson(fields)
 
     expect(result).not.toHaveProperty('name')
+  })
+
+  it('allows any data to be validated', () => {
+    const validatePerson = makeValidator({
+      name: [required],
+      age: [required],
+    })
+
+    const notAPerson = {
+      colour: 'brown',
+      legs: 4,
+    }
+
+    const result = validatePerson(notAPerson)
+
+    expect(result).toEqual({ name: 'Required', age: 'Required' })
   })
 })
